@@ -1,10 +1,14 @@
 from ollama import chat
+from PIL import ImageGrab
+import cv2
+
+web_cam = cv2.VideoCapture(0)
 
 MODEL_NAME = 'hf.co/cognitivecomputations/dolphin-2.9.4-llama3.1-8b-gguf:Q5_K_M'
 history = []
 
 def gen(prompt):
-  system = ('Answer in short and very brief. do not exceed two lines')
+  system = ('Answer in short and very brief. do not exceed one line')
 
   messages = [{'role':'system','content': system}]
   messages.extend(history)
@@ -18,7 +22,6 @@ def gen(prompt):
     return response.message.content
   except Exception as e:
     print(f'ERROR : {e}')
-
 
 def call(prompt):
   system = (
@@ -38,6 +41,21 @@ def call(prompt):
     return response.message.content
   except Exception as e:
     print(f'ERROR : {e}')
+
+def take_screenshot():
+  path = 'screen.jpg'
+  screen = ImageGrab.grab()
+  rgb_screen = screen.convert('RGB') 
+  rgb_screen.save(path, quality=15)
+
+def web_cam_capture():
+  if not web_cam.isOpened():
+    print('Error opening camera')
+    exit()
+
+  path = 'webcam.jpg'
+  ret,frame = web_cam.read()
+  cv2.imwrite(path, frame)
 
 while True:
   prompt = input('USER : ')
