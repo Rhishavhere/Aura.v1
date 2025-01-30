@@ -1,6 +1,7 @@
 from ollama import chat
 from PIL import ImageGrab
 import cv2
+import pyperclip
 
 web_cam = cv2.VideoCapture(0)
 
@@ -56,6 +57,14 @@ def web_cam_capture():
   path = 'webcam.jpg'
   ret,frame = web_cam.read()
   cv2.imwrite(path, frame)
+
+def clipboard():
+  clipboard_content = pyperclip.paste()
+  if isinstance(clipboard_content, str):
+    return clipboard_content
+  else:
+    print("No clipboard text found")
+    return None
 
 while True:
   prompt = input('USER : ')
