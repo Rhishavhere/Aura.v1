@@ -1,0 +1,18 @@
+VISION: Here's an objective description of the image relevant to the user's prompt:
+
+**Image Content:** The image shows a person, appearing to be a teenager, holding a rectangular object (likely a smartphone or tablet) horizontally with his left hand.  His right hand is visible but is not holding anything.  The person is wearing a white sleeveless shirt with the partial text "MERICAN FOOTBALL" visible on the front.  The background is a patterned wallpaper.
+
+**Relevant Data for AI Assistant:**
+
+* **Object Held:** A rectangular object, possibly a phone or tablet, is held by the individual's left hand.
+* **Hand with Object:** Left hand.
+* **Hand without Object:** Right hand.
+* **Image Quality:** Low resolution, somewhat blurry.
+* **Subject:** A young person.
+* **Clothing:** White sleeveless shirt with "MERICAN FOOTBALL" text.
+* **Background:** Patterned wallpaper.
+
+
+This data should enable the AI assistant to accurately answer the user's question.
+
+

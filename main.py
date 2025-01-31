@@ -10,7 +10,10 @@ load_dotenv()
 
 web_cam = cv2.VideoCapture(0)
 MODEL_NAME = 'hf.co/cognitivecomputations/dolphin-2.9.4-llama3.1-8b-gguf:Q5_K_M'
+
 history = []
+with open('./screens/vision_log.txt', 'w') as f:
+  f.write('')
 
 genai.configure(api_key = os.getenv('GEMINI_API'))
 genai_config = {
@@ -93,6 +96,10 @@ def vision_prompt(prompt, photo_path):
     f'assistant who will respond to the user. \nUSER PROMPT: {prompt}'
   )
   response = model.generate_content([prompt, img])
+
+  with open('./screens/vision_log.txt', 'a') as f:
+    f.write(f"VISION: {response.text}\n\n")
+
   return response.text
 
 while True:
