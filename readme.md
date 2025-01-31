@@ -4,7 +4,8 @@
 
 
 
-**AURA** (Advanced Universal Responsive Assistant) is a cutting-edge multi-modal AI voice assistant designed to provide intelligent and context-aware responses. This project represents the initial development phase of AURA, showcasing its core capabilities while laying the foundation for future expansion.
+**AURA** (Advanced Unsupervised Reinforcement Architecture) is a multi-modal `PERSONA` based AI assistant designed to provide intelligent and context-aware responses. This project represents the foundational development of AURA, establishing its core architecture..
+
 
 ## Key Features
 
