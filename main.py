@@ -61,7 +61,7 @@ def function_call(prompt):
   # return response.message.content
 
 def take_screenshot():
-  path = '/screens/screenshot.jpg'
+  path = './screens/screenshot.jpg'
   screen = ImageGrab.grab()
   rgb_screen = screen.convert('RGB') 
   rgb_screen.save(path, quality=15)
@@ -71,7 +71,7 @@ def web_cam_capture():
     print('Error opening camera')
     exit()
 
-  path = '/screens/webcam.jpg'
+  path = './screens/webcam.jpg'
   ret,frame = web_cam.read()
   cv2.imwrite(path, frame)
 
@@ -102,11 +102,11 @@ while True:
   if 'take screenshot' in call:
     print('Taking Screenshot')
     take_screenshot()
-    visual_context = vision_prompt(prompt=prompt, photo_path='/screens/screenshot.jpg')
+    visual_context = vision_prompt(prompt=prompt, photo_path='./screens/screenshot.jpg')
   elif 'capture webcam' in call:
     print('Capturing Webcam')
     web_cam_capture()
-    visual_context = vision_prompt(prompt=prompt, photo_path='/screens/webcam.jpg')
+    visual_context = vision_prompt(prompt=prompt, photo_path='./screens/webcam.jpg')
   elif 'extract clipboard' in call:
     print('copying Clipboard')
     paste = clipboard()
