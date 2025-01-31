@@ -1,0 +1,7 @@
+ollama
+Pillow
+opencv-python
+pyperclip
+google-generativeai
+python-dotenv
+pyaudio
