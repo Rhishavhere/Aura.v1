@@ -5,6 +5,8 @@ import pyperclip
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
+import pyttsx3
+import time
 
 load_dotenv()
 
@@ -36,13 +38,17 @@ system_msg = (
 convo = [{'role':'system', 'content':system_msg}]
 
 def gen(prompt, img_context):
-  if img_context:
-    prompt = f'USER PROMPT: {prompt}\n\n  IMAGE CONTEXT: {img_context}'
-  convo.append({'role':'user','content':prompt})
-  
-  response = chat(model=MODEL_NAME, messages=convo)
-  convo.append({'role':'assistant', 'content': response.message.content})
-  return response.message.content
+  try:
+    if img_context:
+      prompt = f'USER PROMPT: {prompt}\n\n  IMAGE CONTEXT: {img_context}'
+    convo.append({'role':'user','content':prompt})
+    
+    response = chat(model=MODEL_NAME, messages=convo)
+    convo.append({'role':'assistant', 'content': response.message.content})
+    return response.message.content
+  except Exception as e:
+    print(f"Error in generation: {str(e)}")
+    return "Sorry, I encountered an error while processing your request."
 
 def function_call(prompt):
   system = (
@@ -107,6 +113,14 @@ def clear_conversation():
     convo = [{'role':'system', 'content':system_msg}]
     print("Conversation history cleared")
 
+def speak(text):
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[1].id)
+    engine.setProperty('rate', 150)
+    engine.say(text)
+    engine.runAndWait()
+
 while True:
   prompt = input('USER : ')
   if prompt.lower() in ['clear', 'reset']:
@@ -133,3 +147,4 @@ while True:
   response = gen(prompt=prompt, img_context = visual_context)
   # print(f'CONTEXT : {visual_context}')
   print(response)
+  speak(response)
