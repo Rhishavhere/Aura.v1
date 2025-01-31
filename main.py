@@ -6,7 +6,6 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import pyttsx3
-import time
 
 load_dotenv()
 
@@ -123,9 +122,15 @@ def speak(text):
 
 while True:
   prompt = input('USER : ')
+  
   if prompt.lower() in ['clear', 'reset']:
     clear_conversation()
     continue
+  elif prompt.lower() in ['exit', 'quit', 'bye']:
+    print("Goodbye!")
+    web_cam.release()
+    break
+
   call = function_call(prompt)
 
   if 'take screenshot' in call:
