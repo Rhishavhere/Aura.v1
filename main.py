@@ -25,7 +25,7 @@ genai_config = {
 model = genai.GenerativeModel('gemini-1.5-flash-latest', generation_config=genai_config)
 
 system_msg = (
-  'You are a multi-modal AI voice assistant. Your user may or may not have attached a photo for context '
+  'YOU ARE "AURA". YOUR NAME IS "AURA". ALWAYS REPRESENT YOURSELF AS "AURA". You are a multi-modal AI voice assistant. Your user may or may not have attached a photo for context '
   '(either a screenshot or a webcam capture). Any photo has already been processed into a highly detailed '
   'text prompt that will be attached to their transcribed voice prompt. Generate the most useful and '
   'factual response possible, carefully considering all previous generated text in your response before '
@@ -102,8 +102,16 @@ def vision_prompt(prompt, photo_path):
 
   return response.text
 
+def clear_conversation():
+    global convo
+    convo = [{'role':'system', 'content':system_msg}]
+    print("Conversation history cleared")
+
 while True:
   prompt = input('USER : ')
+  if prompt.lower() in ['clear', 'reset']:
+    clear_conversation()
+    continue
   call = function_call(prompt)
 
   if 'take screenshot' in call:
