@@ -110,87 +110,97 @@ def vision_prompt(prompt, photo_path):
   return response.text
 
 def clear_conversation():
-    global convo
-    convo = [{'role':'system', 'content':system_msg}]
-    print("Conversation history cleared")
+  global convo
+  convo = [{'role':'system', 'content':system_msg}]
+  print("Conversation history cleared")
 
 def speak(text):
-    engine = pyttsx3.init()
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[1].id)
-    engine.setProperty('rate', 150)
-    engine.say(text)
-    engine.runAndWait()
+  engine = pyttsx3.init()
+  voices = engine.getProperty('voices')
+  engine.setProperty('voice', voices[1].id)
+  engine.setProperty('rate', 150)
+  engine.say(text)
+  engine.runAndWait()
 
 def save_conversation():
-    with open('./logs/history.json', 'w') as f:
-        json.dump(convo, f)
+  with open('./logs/history.json', 'w') as f:
+      json.dump(convo, f)
 
 def voice_input():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Listening...")
-        audio = recognizer.listen(source)
-        try:
-            text = recognizer.recognize_google(audio)
-            print(f"You said: {text}")
-            return text
-        except sr.UnknownValueError:
-            print("Sorry, I didn't catch that")
-            return None
-        except sr.RequestError:
-            print("Speech service unavailable")
-            return None
+  recognizer = sr.Recognizer()
+  with sr.Microphone() as source:
+      print("Listening...")
+      audio = recognizer.listen(source)
+      try:
+          text = recognizer.recognize_google(audio)
+          print(f"You said: {text}")
+          return text
+      except sr.UnknownValueError:
+          print("Sorry, I didn't catch that")
+          return None
+      except sr.RequestError:
+          print("Speech service unavailable")
+          return None
 
 def show_help():
-    print("""
-Available Commands:
-- clear/reset: Clear conversation history
-- exit/quit/bye: Exit the program
-- history/commands: Show recent commands
-- load: Load previous conversation
-- voice: Use voice input
-- help: Show this help message
-""")
+  print("""
+  Available Commands:
+  - clear/reset: Clear conversation history
+  - exit/quit/bye: Exit the program
+  - history/commands: Show recent commands
+  - load: Load previous conversation
+  - voice: Use voice input
+  - help: Show this help message
+  """)
 
-while True:
-  prompt = input('USER : (or say "voice" for voice input) ')
-  
-  if prompt.lower() == 'voice':
-    prompt = voice_input()
-    if not prompt:
+def main():
+  mode = input('Choose input mode (text/voice): ').lower()
+  while mode not in ['text', 'voice']:
+    print("Invalid choice. Please enter 'text' or 'voice'")
+    mode = input('Choose input mode (text/voice): ').lower()
+
+  while True:
+    if mode == 'voice':
+      prompt = voice_input()
+      if not prompt:
+          continue
+    else:
+      prompt = input('USER : ')
+    
+    if prompt.lower() in ['help', '?']:
+      show_help()
       continue
-  elif prompt.lower() in ['help', '?']:
-    show_help()
-    continue
-  elif prompt.lower() in ['clear', 'reset']:
-    clear_conversation()
-    continue
-  elif prompt.lower() in ['exit', 'quit', 'bye']:
-    print("Goodbye!")
-    web_cam.release()
-    break
+    elif prompt.lower() in ['clear', 'reset']:
+      clear_conversation()
+      continue
+    elif prompt.lower() in ['exit', 'quit', 'bye']:
+      print("Goodbye!")
+      web_cam.release()
+      break
 
-  call = function_call(prompt)
+    call = function_call(prompt)
 
-  if 'take screenshot' in call:
-    print('Taking Screenshot')
-    take_screenshot()
-    visual_context = vision_prompt(prompt=prompt, photo_path='./screens/screenshot.jpg')
-  elif 'capture webcam' in call:
-    print('Capturing Webcam')
-    web_cam_capture()
-    visual_context = vision_prompt(prompt=prompt, photo_path='./screens/webcam.jpg')
-  elif 'extract clipboard' in call:
-    print('copying Clipboard')
-    paste = clipboard()
-    prompt = f'{prompt}\n\n CLIPBOARD CONTENT: {paste}'
-    visual_context = None
-  else:
-    visual_context = None
+    if 'take screenshot' in call:
+      print('Taking Screenshot')
+      take_screenshot()
+      visual_context = vision_prompt(prompt=prompt, photo_path='./screens/screenshot.jpg')
+    elif 'capture webcam' in call:
+      print('Capturing Webcam')
+      web_cam_capture()
+      visual_context = vision_prompt(prompt=prompt, photo_path='./screens/webcam.jpg')
+    elif 'extract clipboard' in call:
+      print('copying Clipboard')
+      paste = clipboard()
+      prompt = f'{prompt}\n\n CLIPBOARD CONTENT: {paste}'
+      visual_context = None
+    else:
+      visual_context = None
 
-  save_conversation()
-  response = gen(prompt=prompt, img_context = visual_context)
-  # print(f'CONTEXT : {visual_context}')
-  print(response)
-  speak(response)
+    save_conversation()
+    response = gen(prompt=prompt, img_context = visual_context)
+    # print(f'CONTEXT : {visual_context}')
+    print(response)
+    speak(response)
+
+if __name__ == "__main__":
+    main()
