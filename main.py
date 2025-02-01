@@ -6,6 +6,8 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import pyttsx3
+import json
+import speech_recognition as sr
 
 load_dotenv()
 
@@ -13,7 +15,7 @@ web_cam = cv2.VideoCapture(0)
 MODEL_NAME = 'llama3.2:1b'
 
 history = []
-with open('./screens/vision_log.txt', 'w') as f:
+with open('./logs/vision_log.txt', 'w') as f:
   f.write('')
 
 genai.configure(api_key = os.getenv('GEMINI_API'))
@@ -120,10 +122,48 @@ def speak(text):
     engine.say(text)
     engine.runAndWait()
 
+def save_conversation():
+    with open('./logs/history.json', 'w') as f:
+        json.dump(convo, f)
+
+def voice_input():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_google(audio)
+            print(f"You said: {text}")
+            return text
+        except sr.UnknownValueError:
+            print("Sorry, I didn't catch that")
+            return None
+        except sr.RequestError:
+            print("Speech service unavailable")
+            return None
+
+def show_help():
+    print("""
+Available Commands:
+- clear/reset: Clear conversation history
+- exit/quit/bye: Exit the program
+- history/commands: Show recent commands
+- load: Load previous conversation
+- voice: Use voice input
+- help: Show this help message
+""")
+
 while True:
-  prompt = input('USER : ')
+  prompt = input('USER : (or say "voice" for voice input) ')
   
-  if prompt.lower() in ['clear', 'reset']:
+  if prompt.lower() == 'voice':
+    prompt = voice_input()
+    if not prompt:
+      continue
+  elif prompt.lower() in ['help', '?']:
+    show_help()
+    continue
+  elif prompt.lower() in ['clear', 'reset']:
     clear_conversation()
     continue
   elif prompt.lower() in ['exit', 'quit', 'bye']:
@@ -149,6 +189,7 @@ while True:
   else:
     visual_context = None
 
+  save_conversation()
   response = gen(prompt=prompt, img_context = visual_context)
   # print(f'CONTEXT : {visual_context}')
   print(response)

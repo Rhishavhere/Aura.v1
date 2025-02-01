@@ -5,3 +5,4 @@ pyperclip
 google-generativeai
 python-dotenv
 pyaudio
+SpeechRecognition
