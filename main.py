@@ -104,7 +104,7 @@ def vision_prompt(prompt, photo_path):
   )
   response = model.generate_content([prompt, img])
 
-  with open('./screens/vision_log.txt', 'a') as f:
+  with open('./logs/vision_log.txt', 'a') as f:
     f.write(f"VISION: {response.text}\n\n")
 
   return response.text
