@@ -12,7 +12,7 @@ from datetime import datetime
 load_dotenv()
 
 web_cam = cv2.VideoCapture(0)
-MODEL_NAME = 'llama3.2:1b'
+MODEL_NAME = 'openllama'
 
 history = []
 with open('./logs/vision_log.txt', 'w') as f:
@@ -34,7 +34,7 @@ system_msg = (
   'factual response possible, carefully considering all previous generated text in your response before '
   'adding new tokens to the response. Do not expect or request images, just use the context if added. '
   'Use all of the context of this conversation so your response is relevant to the conversation. Make '
-  'your responses clear and concise, avoiding any verbosity.'
+  'your responses clear and concise, avoiding any verbosity. ANSWER IN VERY SHORT AND BRIEF. DO NOT OVEREXPLAIN. DO NOT HALLUCINATE'
 )
 convo = [{'role':'system', 'content':system_msg}]
 

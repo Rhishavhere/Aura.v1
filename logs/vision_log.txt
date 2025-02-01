@@ -1,0 +1,15 @@
+VISION: The image shows a person holding a smartphone.  The phone is held vertically and takes up a significant portion of the frame. The screen is dark, making the content unidentifiable. The phone appears to be a relatively modern rectangular model with a dark bezel.
+
+The person holding the phone is partially visible; only their hand and a portion of their face, obscured by a dark hooded sweatshirt, are seen.  The background is a patterned wallpaper in gold and beige tones. The lighting in the image is dim.
+
+**Objective Data for AI Assistant:**
+
+* **Object:** Smartphone
+* **Orientation:** Vertical
+* **Screen Content:** Unidentifiable (dark screen)
+* **Phone Type:** Modern rectangular smartphone, dark bezel
+* **Person Visibility:** Partially visible; hand and partially obscured face
+* **Clothing:** Dark hooded sweatshirt with visible stripes
+* **Background:** Gold and beige patterned wallpaper
+* **Lighting:** Dim
+
