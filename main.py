@@ -6,8 +6,8 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import pyttsx3
-import json
 import speech_recognition as sr
+from datetime import datetime
 
 load_dotenv()
 
@@ -122,25 +122,37 @@ def speak(text):
   engine.say(text)
   engine.runAndWait()
 
-def save_conversation():
-  with open('./logs/history.json', 'w') as f:
-      json.dump(convo, f)
+def save_conversation(prompt=None, call=None, visual_context=None, response=None):
+  log_entry = (
+    f"Timestamp: {datetime.now().isoformat()}\n"
+    f"User Prompt: {prompt}\n"
+    f"Function Call: {call}"
+    f"Visual Context: {visual_context}\n"
+    f"AI Response: {response}\n"
+    "----------------------------------------\n"
+  )
+  
+  try:
+    with open('./logs/conversation_log.txt', 'a') as f:
+      f.write(log_entry)
+  except Exception as e:
+    print(f"Error saving conversation: {str(e)}")
 
 def voice_input():
   recognizer = sr.Recognizer()
   with sr.Microphone() as source:
-      print("Listening...")
-      audio = recognizer.listen(source)
-      try:
-          text = recognizer.recognize_google(audio)
-          print(f"You said: {text}")
-          return text
-      except sr.UnknownValueError:
-          print("Sorry, I didn't catch that")
-          return None
-      except sr.RequestError:
-          print("Speech service unavailable")
-          return None
+    print("Listening...")
+    audio = recognizer.listen(source)
+    try:
+      text = recognizer.recognize_google(audio)
+      print(f"You said: {text}")
+      return text
+    except sr.UnknownValueError:
+      print("Sorry, I didn't catch that")
+      return None
+    except sr.RequestError:
+      print("Speech service unavailable")
+      return None
 
 def show_help():
   print("""
@@ -154,6 +166,9 @@ def show_help():
   """)
 
 def main():
+  # open('./logs/conversation_log.txt', 'w').close()
+  
+  print("** Aura.v1  **")
   mode = input('Choose input mode (text/voice): ').lower()
   while mode not in ['text', 'voice']:
     print("Invalid choice. Please enter 'text' or 'voice'")
@@ -163,7 +178,7 @@ def main():
     if mode == 'voice':
       prompt = voice_input()
       if not prompt:
-          continue
+        continue
     else:
       prompt = input('USER : ')
     
@@ -196,9 +211,9 @@ def main():
     else:
       visual_context = None
 
-    save_conversation()
     response = gen(prompt=prompt, img_context = visual_context)
-    # print(f'CONTEXT : {visual_context}')
+    save_conversation(prompt=prompt, call=call, visual_context=visual_context, response=response)
+    
     print(response)
     speak(response)
 
