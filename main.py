@@ -8,11 +8,14 @@ import os
 import pyttsx3
 import speech_recognition as sr
 from datetime import datetime
+import time
+import sys
+import threading
 
 load_dotenv()
 
 web_cam = cv2.VideoCapture(0)
-MODEL_NAME = 'openllama'
+MODEL_NAME = 'llama3.2:1b'
 
 history = []
 with open('./logs/vision_log.txt', 'w') as f:
@@ -28,7 +31,7 @@ genai_config = {
 model = genai.GenerativeModel('gemini-1.5-flash-latest', generation_config=genai_config)
 
 system_msg = (
-  'YOU ARE "AURA". YOUR NAME IS "AURA". ALWAYS REPRESENT YOURSELF AS AURA. You are a multi-modal AI voice assistant. Your user may or may not have attached a photo for context '
+  'YOU ARE AURA. YOUR NAME IS AURA. You are a multi-modal AI voice assistant. Your user may or may not have attached a photo for context '
   '(either a screenshot or a webcam capture). Any photo has already been processed into a highly detailed '
   'text prompt that will be attached to their transcribed voice prompt. Generate the most useful and '
   'factual response possible, carefully considering all previous generated text in your response before '
@@ -37,6 +40,8 @@ system_msg = (
   'your responses clear and concise, avoiding any verbosity. ANSWER IN VERY SHORT AND BRIEF. DO NOT OVEREXPLAIN. DO NOT HALLUCINATE'
 )
 convo = [{'role':'system', 'content':system_msg}]
+
+
 
 def gen(prompt, img_context):
   try:
@@ -117,7 +122,10 @@ def clear_conversation():
 def speak(text):
   engine = pyttsx3.init()
   voices = engine.getProperty('voices')
-  engine.setProperty('voice', voices[1].id)
+  if character == 'male':
+      engine.setProperty('voice', voices[0].id)
+  else:
+      engine.setProperty('voice', voices[1].id)
   engine.setProperty('rate', 150)
   engine.say(text)
   engine.runAndWait()
@@ -163,13 +171,53 @@ def show_help():
   - load: Load previous conversation
   - voice: Use voice input
   - help: Show this help message
+  - change to Male_Female voice
   """)
+
+def create_custom_file(prompt):
+  prompt_lower = prompt.lower()
+  idx_named = prompt_lower.find("named")
+  idx_with_content = prompt_lower.find("with content")
+  
+  if idx_named == -1 or idx_with_content == -1 or idx_named > idx_with_content:
+    print("Invalid file command. Ensure the command has both 'named' and 'with content' in the proper order.")
+    speak("Invalid file command.")
+    return
+
+  
+  file_name_segment = prompt[idx_named + len("named"):idx_with_content].strip()
+  file_name = file_name_segment.split()[0] if file_name_segment.split() else "unnamed"
+  
+  
+  file_content = prompt[idx_with_content + len("with content"):].strip()
+  
+  
+  import os
+  desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+  file_path = os.path.join(desktop_path, f"{file_name}.txt")
+  
+  try:
+      with open(file_path, "w") as f:
+          f.write(file_content)
+      print(f"{file_name}.txt created on Desktop with content: {file_content}")
+      speak(f"{file_name} file created on Desktop.")
+  except Exception as e:
+      print("Error creating file:", e)
+      speak("Could not create file.")
 
 def main():
   # open('./logs/conversation_log.txt', 'w').close()
   
+  global character
+  welcome = 'System Booting Up..\n'
+  character='female'
   print("** Aura.v1  **")
-  mode = input('Choose input mode (text/voice): ').lower()
+  for char in welcome:
+    sys.stdout.write(char)
+    sys.stdout.flush()
+    time.sleep(.05)
+  speak('Do you wanna text or talk ?')
+  mode = input('(text/voice): ').lower()
   while mode not in ['text', 'voice']:
     print("Invalid choice. Please enter 'text' or 'voice'")
     mode = input('Choose input mode (text/voice): ').lower()
@@ -183,15 +231,30 @@ def main():
       prompt = input('USER : ')
     
     if prompt.lower() in ['help', '?']:
+      speak("Sure")
       show_help()
+      speak("These are the available commands I am programmed with")
       continue
     elif prompt.lower() in ['clear', 'reset']:
       clear_conversation()
+      speak("Conversation Cleared")
       continue
-    elif prompt.lower() in ['exit', 'quit', 'bye']:
+    elif prompt.lower() in ['change to male voice', 'talk in male voice', 'activate male voice']:
+      character = 'male'
+      speak("Voice changed to male")
+      continue
+    elif prompt.lower() in ['change to female voice', 'talk in female voice', 'activate female voice']:      
+      character = 'female'
+      speak("Voice changed to female")
+      continue
+    elif prompt.lower() in ['exit', 'quit', 'bye','goodbye']:
       print("Goodbye!")
+      speak("Goodbye")
       web_cam.release()
       break
+    elif 'create a file' in prompt.lower():
+      create_custom_file(prompt)
+      continue
 
     call = function_call(prompt)
 
