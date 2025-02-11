@@ -1,8 +1,10 @@
 venv
 .env
+screens
 screens/screenshot.jpg
 screens/webcam.jpg
 notes.txt
+logs
 logs/conversation_log.txt
 logs/history.json
 logs/vision_log
