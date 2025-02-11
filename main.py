@@ -1,3 +1,14 @@
+import time
+import sys
+
+print("** Aura.v1  **")
+welcome = 'System Booting Up..\n'
+for char in welcome:
+  sys.stdout.write(char)
+  sys.stdout.flush()
+  time.sleep(.05)
+
+
 from ollama import chat
 from PIL import ImageGrab, Image
 import cv2
@@ -8,9 +19,6 @@ import os
 import pyttsx3
 import speech_recognition as sr
 from datetime import datetime
-import time
-import sys
-import threading
 
 load_dotenv()
 
@@ -31,13 +39,13 @@ genai_config = {
 model = genai.GenerativeModel('gemini-1.5-flash-latest', generation_config=genai_config)
 
 system_msg = (
-  'YOU ARE AURA. YOUR NAME IS AURA. You are a multi-modal AI voice assistant. Your user may or may not have attached a photo for context '
+  'ANSWER IN VERY VERY SHORT AND BRIEF. DO NOT OVEREXPLAIN. YOU ARE AURA. YOUR NAME IS AURA. You are a multi-modal AI voice assistant. Your user may or may not have attached a photo for context '
   '(either a screenshot or a webcam capture). Any photo has already been processed into a highly detailed '
   'text prompt that will be attached to their transcribed voice prompt. Generate the most useful and '
   'factual response possible, carefully considering all previous generated text in your response before '
   'adding new tokens to the response. Do not expect or request images, just use the context if added. '
   'Use all of the context of this conversation so your response is relevant to the conversation. Make '
-  'your responses clear and concise, avoiding any verbosity. ANSWER IN VERY SHORT AND BRIEF. DO NOT OVEREXPLAIN. DO NOT HALLUCINATE'
+  'your responses clear and concise, avoiding any verbosity.'
 )
 convo = [{'role':'system', 'content':system_msg}]
 
@@ -209,18 +217,15 @@ def main():
   # open('./logs/conversation_log.txt', 'w').close()
   
   global character
-  welcome = 'System Booting Up..\n'
+  
   character='female'
-  print("** Aura.v1  **")
-  for char in welcome:
-    sys.stdout.write(char)
-    sys.stdout.flush()
-    time.sleep(.05)
-  speak('Do you wanna text or talk ?')
+  
   mode = input('(text/voice): ').lower()
   while mode not in ['text', 'voice']:
     print("Invalid choice. Please enter 'text' or 'voice'")
     mode = input('Choose input mode (text/voice): ').lower()
+  print('Hi! Greetings From Aura')
+  speak('Hi! Greetings From Aura')
 
   while True:
     if mode == 'voice':
@@ -228,7 +233,7 @@ def main():
       if not prompt:
         continue
     else:
-      prompt = input('USER : ')
+      prompt = input('ask:  ')
     
     if prompt.lower() in ['help', '?']:
       speak("Sure")
