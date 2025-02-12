@@ -1,14 +1,3 @@
-import time
-import sys
-
-print("** Aura.v1  **")
-welcome = 'System Booting Up..\n'
-for char in welcome:
-  sys.stdout.write(char)
-  sys.stdout.flush()
-  time.sleep(.05)
-
-
 from ollama import chat
 from PIL import ImageGrab, Image
 import cv2
@@ -19,6 +8,8 @@ import os
 import pyttsx3
 import speech_recognition as sr
 from datetime import datetime
+import time
+import sys
 
 load_dotenv()
 
@@ -71,15 +62,15 @@ def function_call(prompt):
     'to the users prompt. The webcam can be assumed to be a normal laptop webcam facing the user. You will '
     'respond with only one selection from this list: ["extract clipboard", "take screenshot", "capture webcam", "None"] \n'
     'You MUST NOT respond with anything but the most logical selection from the list with no explanations. Format the '
-    'function call name exactly as I listed'
+    'function call name exactly as I listed.'
   )
 
-  # func_convo = [{'role':'system','content': system},
-  #               {'role':'user','content': prompt}]
+  
   func_convo = f"System: {system}\nUser: {prompt}"
-
   response = model.generate_content(func_convo)
   return response.text
+
+  # func_convo = [{'role':'system','content': system},{'role':'user','content': prompt}]
   # response = chat(model=MODEL_NAME, messages=func_convo)
   # return response.message.content
 
@@ -161,7 +152,7 @@ def voice_input():
     audio = recognizer.listen(source)
     try:
       text = recognizer.recognize_google(audio)
-      print(f"You said: {text}")
+      print(f"ask: {text}")
       return text
     except sr.UnknownValueError:
       print("Sorry, I didn't catch that")
@@ -186,32 +177,24 @@ def create_custom_file(prompt):
   prompt_lower = prompt.lower()
   idx_named = prompt_lower.find("named")
   idx_with_content = prompt_lower.find("with content")
-  
   if idx_named == -1 or idx_with_content == -1 or idx_named > idx_with_content:
     print("Invalid file command. Ensure the command has both 'named' and 'with content' in the proper order.")
     speak("Invalid file command.")
     return
-
-  
   file_name_segment = prompt[idx_named + len("named"):idx_with_content].strip()
   file_name = file_name_segment.split()[0] if file_name_segment.split() else "unnamed"
-  
-  
   file_content = prompt[idx_with_content + len("with content"):].strip()
-  
-  
   import os
   desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
   file_path = os.path.join(desktop_path, f"{file_name}.txt")
-  
   try:
-      with open(file_path, "w") as f:
-          f.write(file_content)
-      print(f"{file_name}.txt created on Desktop with content: {file_content}")
-      speak(f"{file_name} file created on Desktop.")
+    with open(file_path, "w") as f:
+      f.write(file_content)
+    print(f"{file_name}.txt created on Desktop with content: {file_content}")
+    speak(f"{file_name} file created on Desktop.")
   except Exception as e:
-      print("Error creating file:", e)
-      speak("Could not create file.")
+    print("Error creating file:", e)
+    speak("Could not create file.")
 
 def main():
   # open('./logs/conversation_log.txt', 'w').close()
@@ -219,13 +202,22 @@ def main():
   global character
   
   character='female'
-  
+  welcome = "** Aura.v1  **\n"
+  welcome1 = 'System Booting Up..\n'
+  for char in welcome:
+    sys.stdout.write(char)
+    sys.stdout.flush()
+    time.sleep(.08)
+  for char in welcome1:
+    sys.stdout.write(char)
+    sys.stdout.flush()
+    time.sleep(.08)
+  # print('Hi! Greetings From Aura')
+  # speak('Hi! Greetings From Aura')
   mode = input('(text/voice): ').lower()
   while mode not in ['text', 'voice']:
     print("Invalid choice. Please enter 'text' or 'voice'")
     mode = input('Choose input mode (text/voice): ').lower()
-  print('Hi! Greetings From Aura')
-  speak('Hi! Greetings From Aura')
 
   while True:
     if mode == 'voice':
@@ -261,7 +253,8 @@ def main():
       create_custom_file(prompt)
       continue
 
-    call = function_call(prompt)
+    # call = function_call(prompt)
+    call = "None"
 
     if 'take screenshot' in call:
       print('Taking Screenshot')
